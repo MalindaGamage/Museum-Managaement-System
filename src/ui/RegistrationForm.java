@@ -37,7 +37,7 @@ public class RegistrationForm extends JFrame {
         String role = (String) roleComboBox.getSelectedItem();
         String email = emailField.getText();
 
-        boolean isVisitor = "model.Visitor".equals(role);
+        boolean isVisitor = "visitor".equals(role);
         UserService.registerUser(username, password, role, email, isVisitor);
 
         JOptionPane.showMessageDialog(this, "Registration Successful!");

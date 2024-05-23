@@ -11,7 +11,6 @@ public class Collection {
     private String status;
     private String imageUrl;
 
-    // Constructor
     public Collection(int collectionId, String name, String description, String category, Date acquisitionDate, String status, String imageUrl) {
         this.collectionId = collectionId;
         this.name = name;

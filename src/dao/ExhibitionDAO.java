@@ -48,4 +48,31 @@ public class ExhibitionDAO {
             e.printStackTrace();
         }
     }
+
+    public void updateExhibition(Exhibition exhibition) {
+        String sql = "UPDATE exhibitions SET title = ?, start_date = ?, end_date = ?, description = ?, is_active = ? WHERE exhibition_id = ?";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, exhibition.getTitle());
+            stmt.setDate(2, new java.sql.Date(exhibition.getStartDate().getTime()));
+            stmt.setDate(3, new java.sql.Date(exhibition.getEndDate().getTime()));
+            stmt.setString(4, exhibition.getDescription());
+            stmt.setBoolean(5, exhibition.isActive());
+            stmt.setInt(6, exhibition.getExhibitionId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteExhibition(int exhibitionId) {
+        String sql = "DELETE FROM exhibitions WHERE exhibition_id = ?";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, exhibitionId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

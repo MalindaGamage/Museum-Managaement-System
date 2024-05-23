@@ -39,6 +39,7 @@ public class MainApplicationFrame extends JFrame {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+
     private void setupAdminUI(JMenuBar menuBar) {
         JMenu manageMenu = new JMenu("Manage");
         menuBar.add(manageMenu);
@@ -50,6 +51,10 @@ public class MainApplicationFrame extends JFrame {
         JMenuItem collectionsItem = new JMenuItem("Collections");
         manageMenu.add(collectionsItem);
         collectionsItem.addActionListener(this::showCollectionManagement);
+
+        JMenuItem exhibitionsItem = new JMenuItem("Exhibitions");
+        manageMenu.add(exhibitionsItem);
+        exhibitionsItem.addActionListener(this::showExhibitionManagement);
     }
 
     private void setupVisitorUI(JMenuBar menuBar) {
@@ -71,15 +76,23 @@ public class MainApplicationFrame extends JFrame {
 
     private void showCollectionManagement(ActionEvent event) {
         contentPanel.removeAll();
-        JPanel collectionManagementPanel = new JPanel(); // Replace with actual collection management implementation
+        CollectionManagementPanel collectionManagementPanel = new CollectionManagementPanel();
         contentPanel.add(collectionManagementPanel);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private void showExhibitionManagement(ActionEvent event) {
+        contentPanel.removeAll();
+        ExhibitionManagementPanel exhibitionManagementPanel = new ExhibitionManagementPanel();
+        contentPanel.add(exhibitionManagementPanel);
         contentPanel.revalidate();
         contentPanel.repaint();
     }
 
     private void showCollectionViewer(ActionEvent event) {
         contentPanel.removeAll();
-        JPanel collectionViewerPanel = new JPanel(); // Implement this panel to view collections
+        CollectionViewerPanel collectionViewerPanel = new CollectionViewerPanel();
         contentPanel.add(collectionViewerPanel);
         contentPanel.revalidate();
         contentPanel.repaint();
