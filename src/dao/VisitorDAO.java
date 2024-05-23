@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class VisitorDAO {
     public List<Visitor> getAllVisitors() {
@@ -19,7 +20,7 @@ public class VisitorDAO {
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Visitor visitor = new Visitor(
-                        rs.getInt("visitor_id"),
+                        UUID.fromString(rs.getString("visitor_id")),
                         rs.getString("full_name"),
                         rs.getString("email"),
                         rs.getString("phone"),
@@ -55,7 +56,7 @@ public class VisitorDAO {
             stmt.setString(2, visitor.getEmail());
             stmt.setString(3, visitor.getPhone());
             stmt.setDate(4, new java.sql.Date(visitor.getVisitDate().getTime()));
-            stmt.setInt(5, visitor.getVisitorId());
+            stmt.setString(5, visitor.getVisitorId().toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -81,7 +82,7 @@ public class VisitorDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Visitor(
-                        rs.getInt("visitorId"),
+                        UUID.fromString(rs.getString("visitor_id")),
                         rs.getString("fullName"),
                         rs.getString("email"),
                         rs.getString("phone"),

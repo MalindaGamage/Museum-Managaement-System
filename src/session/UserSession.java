@@ -1,21 +1,21 @@
 package session;
 
 public class UserSession {
-    private static boolean loggedIn = false;
+    private static boolean isLoggedIn = false;
     private static boolean isVisitor = false;
 
-    public static boolean isLoggedIn() {
-        return loggedIn;
-    }
-
-    public static void logIn(boolean isVisitor) {
-        UserSession.loggedIn = true;
-        UserSession.isVisitor = isVisitor;  // Store whether the user is a visitor
+    public static void logIn(boolean visitor) {
+        isLoggedIn = true;
+        isVisitor = visitor;
     }
 
     public static void logOut() {
-        loggedIn = false;
+        isLoggedIn = false;
         isVisitor = false;
+    }
+
+    public static boolean isLoggedIn() {
+        return isLoggedIn;
     }
 
     public static boolean isVisitor() {

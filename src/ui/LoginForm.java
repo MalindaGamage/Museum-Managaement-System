@@ -1,11 +1,12 @@
 package ui;
 
 import model.User;
-import service.AuthenticationService;
+import service.UserService;
 import session.UserSession;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class LoginForm extends JFrame {
     private JTextField usernameField = new JTextField(15);
@@ -26,31 +27,32 @@ public class LoginForm extends JFrame {
         add(loginButton);
         add(registerButton);
 
-        loginButton.addActionListener(e -> performLogin());
-        registerButton.addActionListener(e -> openRegistrationForm());
+        loginButton.addActionListener(this::performLogin);
+        registerButton.addActionListener(this::openRegistrationForm);
 
         pack();
         setLocationRelativeTo(null);
     }
 
-    private void openRegistrationForm() {
+    private void openRegistrationForm(ActionEvent event) {
         RegistrationForm registrationForm = new RegistrationForm();
         registrationForm.setVisible(true);
     }
 
-    private void performLogin() {
+    private void performLogin(ActionEvent event) {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
-        AuthenticationService authService = new AuthenticationService();
-        User user = authService.authenticate(username, password);
+
+        User user = UserService.authenticateUser(username, password);
+
         if (user != null) {
             JOptionPane.showMessageDialog(this, "Login successful!");
-            UserSession.logIn(user.isVisitor());  // Update session based on user role
-            dispose(); // Close the login window
+            UserSession.logIn(user.isVisitor());
+            dispose();
             MainApplicationFrame mainFrame = new MainApplicationFrame(user.isVisitor());
-            mainFrame.setVisible(true); // Open the main application window
+            mainFrame.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(this, "Login failed!");
+            JOptionPane.showMessageDialog(this, "Invalid username or password. Please try again.", "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 

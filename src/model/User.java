@@ -1,15 +1,17 @@
 package model;
 
+import java.util.UUID;
+
 public class User {
-    private boolean isVisitor;
-    private int userId;
+    private UUID userId;
     private String username;
     private String password; // In a real-world application, store hashed passwords only
     private String role;
     private String email;
+    private boolean isVisitor;
 
     // Constructor
-    public User(int userId, String username, String password, String role, String email, boolean isVisitor) {
+    public User(UUID userId, String username, String password, String role, String email, boolean isVisitor) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -19,7 +21,7 @@ public class User {
     }
 
     // Getters
-    public int getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
@@ -44,7 +46,7 @@ public class User {
     }
 
     // Setters
-    public void setUserId(int userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

@@ -1,22 +1,20 @@
 package ui;
 
-import dao.UserDAO;
 import model.User;
+import service.UserService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class UserDialog extends JDialog {
-    private JTable userTable;
     private JTextField usernameField = new JTextField(10);
-    private JTextField passwordField = new JTextField(10);
-    private JTextField roleField = new JTextField(10);
+    private JPasswordField passwordField = new JPasswordField(10);
+    private JComboBox<String> roleComboBox = new JComboBox<>(new String[]{"admin", "staff", "visitor"});
     private JTextField emailField = new JTextField(10);
-    private JCheckBox isVisitorCheckbox = new JCheckBox("model.Visitor");
+    private JCheckBox isVisitorCheckbox = new JCheckBox("Visitor");
     private JButton saveButton = new JButton("Save");
     private boolean isEdit;
-    private UserDAO userDAO;
     private DefaultTableModel model;
     private int row;
 
@@ -25,24 +23,23 @@ public class UserDialog extends JDialog {
         this.isEdit = isEdit;
         this.model = model;
         this.row = row;
-        this.userDAO = new UserDAO(); // Initialize DAO within the dialog for operations
 
-        setLayout(new GridLayout(5, 2));
+        setLayout(new GridLayout(6, 2));
         add(new JLabel("Username:"));
         add(usernameField);
         add(new JLabel("Password:"));
         add(passwordField);
         add(new JLabel("Role:"));
-        add(roleField);
+        add(roleComboBox);
         add(new JLabel("Email:"));
         add(emailField);
-        add(new JLabel("model.Visitor:"));
+        add(new JLabel("Visitor:"));
         add(isVisitorCheckbox);
 
         if (user != null) {
             usernameField.setText(user.getUsername());
             passwordField.setText(user.getPassword());
-            roleField.setText(user.getRole());
+            roleComboBox.setSelectedItem(user.getRole());
             emailField.setText(user.getEmail());
             isVisitorCheckbox.setSelected(user.isVisitor());
         }
@@ -56,54 +53,24 @@ public class UserDialog extends JDialog {
 
     private void saveUser() {
         String username = usernameField.getText();
-        String password = passwordField.getText(); // Consider hashing before saving
-        String role = roleField.getText();
+        String password = new String(passwordField.getPassword()); // Get the password as a string
+        String role = (String) roleComboBox.getSelectedItem();
         String email = emailField.getText();
         boolean isVisitor = isVisitorCheckbox.isSelected();
 
         if (isEdit) {
-            userDAO.updateUser(new User(0, username, password, role, email, isVisitor)); // Implement updateUser in dao.UserDAO
+            // Update existing user
+            UserService.registerUser(username, password, role, email, isVisitor); // Ensure password is hashed
             model.setValueAt(username, row, 0);
             model.setValueAt(role, row, 1);
             model.setValueAt(email, row, 2);
         } else {
-            userDAO.addUser(new User(0, username, password, role, email, isVisitor));
+            // Add new user
+            UserService.registerUser(username, password, role, email, isVisitor); // Ensure password is hashed
             model.addRow(new Object[]{username, role, email});
         }
 
         setVisible(false);
         dispose();
     }
-
-    private void editUser() {
-        int selectedRow = userTable.getSelectedRow();
-        if (selectedRow != -1) {
-            String username = (String) model.getValueAt(selectedRow, 0);
-            User user = userDAO.getUserByUsername(username);
-            if (user != null) {
-                UserDialog dialog = new UserDialog(JFrame.getFrames()[0], "Edit model.User", true, user, true, model, selectedRow);
-                dialog.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "model.User not found.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a user to edit.");
-        }
-    }
-
-    private void deleteUser() {
-        int selectedRow = userTable.getSelectedRow();
-        if (selectedRow != -1) {
-            String username = (String) userTable.getValueAt(selectedRow, 0); // Assuming username is in column 0
-            int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm", JOptionPane.YES_NO_OPTION);
-            if (response == JOptionPane.YES_OPTION) {
-                UserDAO userDAO = new UserDAO();
-                userDAO.deleteUser(username);
-                ((DefaultTableModel)userTable.getModel()).removeRow(selectedRow); // Assuming a DefaultTableModel is used
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "No user selected for deletion.");
-        }
-    }
-
 }

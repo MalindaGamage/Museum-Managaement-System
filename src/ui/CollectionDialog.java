@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Date;
+import java.util.UUID;
 
 public class CollectionDialog extends JDialog {
     private JTextField nameField = new JTextField(10);
@@ -21,7 +22,6 @@ public class CollectionDialog extends JDialog {
     private CollectionDAO collectionDAO;
     private DefaultTableModel model;
     private int row;
-    private int collectionId;
 
     public CollectionDialog(Frame owner, String title, boolean modal, Collection collection, boolean isEdit, DefaultTableModel model, int row) {
         super(owner, title, modal);
@@ -45,7 +45,6 @@ public class CollectionDialog extends JDialog {
         add(imageUrlField);
 
         if (collection != null) {
-            collectionId = collection.getCollectionId();
             nameField.setText(collection.getName());
             descriptionField.setText(collection.getDescription());
             categoryField.setText(collection.getCategory());
@@ -66,32 +65,26 @@ public class CollectionDialog extends JDialog {
         String description = descriptionField.getText();
         String category = categoryField.getText();
         Date acquisitionDate = java.sql.Date.valueOf(acquisitionDateField.getText());
-        String status = truncateStatus(statusField.getText());
+        String status = statusField.getText();
         String imageUrl = imageUrlField.getText();
 
         if (isEdit) {
-            Collection collection = new Collection(collectionId, name, description, category, acquisitionDate, status, imageUrl);
+            Collection collection = new Collection(model.getValueAt(row, 0).toString(), name, description, category, acquisitionDate, status, imageUrl);
             collectionDAO.updateCollection(collection);
-            model.setValueAt(name, row, 0);
-            model.setValueAt(description, row, 1);
-            model.setValueAt(category, row, 2);
-            model.setValueAt(acquisitionDate, row, 3);
-            model.setValueAt(status, row, 4);
-            model.setValueAt(imageUrl, row, 5);
+            model.setValueAt(name, row, 1);
+            model.setValueAt(description, row, 2);
+            model.setValueAt(category, row, 3);
+            model.setValueAt(acquisitionDate, row, 4);
+            model.setValueAt(status, row, 5);
+            model.setValueAt(imageUrl, row, 6);
         } else {
-            Collection collection = new Collection(0, name, description, category, acquisitionDate, status, imageUrl);
+            String collectionId = UUID.randomUUID().toString();
+            Collection collection = new Collection(collectionId, name, description, category, acquisitionDate, status, imageUrl);
             collectionDAO.addCollection(collection);
-            model.addRow(new Object[]{name, description, category, acquisitionDate, status, imageUrl});
+            model.addRow(new Object[]{collectionId, name, description, category, acquisitionDate, status, imageUrl});
         }
 
         setVisible(false);
         dispose();
-    }
-
-    private String truncateStatus(String status) {
-        if (status.length() > 10) {
-            return status.substring(0, 10);
-        }
-        return status;
     }
 }

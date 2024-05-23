@@ -1,16 +1,17 @@
 package model;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class Visitor {
-    private int visitorId;
+    private UUID visitorId;
     private String fullName;
     private String email;
     private String phone;
     private Date visitDate;
 
     // Constructor
-    public Visitor(int visitorId, String fullName, String email, String phone, Date visitDate) {
+    public Visitor(UUID visitorId, String fullName, String email, String phone, Date visitDate) {
         this.visitorId = visitorId;
         this.fullName = fullName;
         this.email = email;
@@ -19,7 +20,7 @@ public class Visitor {
     }
 
     // Getters
-    public int getVisitorId() {
+    public UUID getVisitorId() {
         return visitorId;
     }
 
@@ -40,7 +41,7 @@ public class Visitor {
     }
 
     // Setters
-    public void setVisitorId(int visitorId) {
+    public void setVisitorId(UUID visitorId) {
         this.visitorId = visitorId;
     }
 

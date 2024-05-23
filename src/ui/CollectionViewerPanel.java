@@ -9,26 +9,22 @@ import java.awt.*;
 import java.util.List;
 
 public class CollectionViewerPanel extends JPanel {
-    private JTable collectionTable;
-    private DefaultTableModel model;
+    private JTable table;
+    private DefaultTableModel tableModel;
     private CollectionDAO collectionDAO;
 
     public CollectionViewerPanel() {
         setLayout(new BorderLayout());
-
         collectionDAO = new CollectionDAO();
-        model = new DefaultTableModel(new String[]{"Name", "Description", "Category", "Acquisition Date", "Status", "Image URL"}, 0);
-        collectionTable = new JTable(model);
 
-        loadCollections();
+        tableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Description", "Category", "Acquisition Date", "Status", "Image URL"}, 0);
+        table = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(table);
 
-        add(new JScrollPane(collectionTable), BorderLayout.CENTER);
-    }
-
-    private void loadCollections() {
-        List<Collection> collections = (List<Collection>) collectionDAO.getAllCollections();
+        List<Collection> collections = collectionDAO.getAllCollections();
         for (Collection collection : collections) {
-            model.addRow(new Object[]{
+            tableModel.addRow(new Object[]{
+                    collection.getCollectionId(),
                     collection.getName(),
                     collection.getDescription(),
                     collection.getCategory(),
@@ -37,5 +33,7 @@ public class CollectionViewerPanel extends JPanel {
                     collection.getImageUrl()
             });
         }
+
+        add(scrollPane, BorderLayout.CENTER);
     }
 }

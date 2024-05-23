@@ -10,30 +10,24 @@ import java.awt.*;
 
 public class UserManagementPanel extends JPanel {
     private JTable userTable;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-    private DefaultTableModel model; // Define the table model
-    private UserDAO userDAO; // Define the dao.UserDAO
+    private DefaultTableModel model;
 
     public UserManagementPanel() {
-        this.userDAO = new UserDAO(); // Initialize dao.UserDAO
         setLayout(new BorderLayout());
         initializeUI();
-        loadData(); // Load data once UI is set up
+        loadData();
     }
 
     private void initializeUI() {
-        // Initialize the table model with column names
         model = new DefaultTableModel(new Object[]{"Username", "Role", "Email"}, 0);
         userTable = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(userTable);
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        addButton = new JButton("Add");
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
+        JButton addButton = new JButton("Add");
+        JButton editButton = new JButton("Edit");
+        JButton deleteButton = new JButton("Delete");
 
         addButton.addActionListener(e -> addUser());
         editButton.addActionListener(e -> editUser());
@@ -48,29 +42,31 @@ public class UserManagementPanel extends JPanel {
 
     private void loadData() {
         model.setRowCount(0); // Clear the table
-        java.util.List<User> users = userDAO.getAllUsers(); // Fetch all users
+        UserDAO userDAO = new UserDAO();
+        java.util.List<User> users = userDAO.getAllUsers();
         for (User user : users) {
             model.addRow(new Object[]{user.getUsername(), user.getRole(), user.getEmail()});
         }
     }
 
     private void addUser() {
-        UserDialog dialog = new UserDialog(JFrame.getFrames()[0], "Add model.User", true, null, false, model, -1);
+        UserDialog dialog = new UserDialog(JFrame.getFrames()[0], "Add User", true, null, false, model, -1);
         dialog.setVisible(true);
-        loadData();
+        loadData(); // Refresh data
     }
 
     private void editUser() {
         int selectedRow = userTable.getSelectedRow();
         if (selectedRow != -1) {
             String username = (String) model.getValueAt(selectedRow, 0);
+            UserDAO userDAO = new UserDAO();
             User user = userDAO.getUserByUsername(username);
             if (user != null) {
-                UserDialog dialog = new UserDialog(JFrame.getFrames()[0], "Edit model.User", true, user, true, model, selectedRow);
+                UserDialog dialog = new UserDialog(JFrame.getFrames()[0], "Edit User", true, user, true, model, selectedRow);
                 dialog.setVisible(true);
-                loadData();
+                loadData(); // Refresh data
             } else {
-                JOptionPane.showMessageDialog(this, "model.User not found.");
+                JOptionPane.showMessageDialog(this, "User not found.");
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please select a user to edit.");
@@ -83,6 +79,7 @@ public class UserManagementPanel extends JPanel {
             String username = (String) model.getValueAt(selectedRow, 0);
             int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm", JOptionPane.YES_NO_OPTION);
             if (response == JOptionPane.YES_OPTION) {
+                UserDAO userDAO = new UserDAO();
                 userDAO.deleteUser(username);
                 model.removeRow(selectedRow); // Remove from table
             }

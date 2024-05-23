@@ -19,7 +19,7 @@ public class CollectionDAO {
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Collection collection = new Collection(
-                        rs.getInt("collection_id"),
+                        rs.getString("collection_id"),
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getString("category"),
@@ -36,15 +36,16 @@ public class CollectionDAO {
     }
 
     public void addCollection(Collection collection) {
-        String sql = "INSERT INTO collections (name, description, category, acquisition_date, status, image_url) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO collections (collection_id, name, description, category, acquisition_date, status, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, collection.getName());
-            stmt.setString(2, collection.getDescription());
-            stmt.setString(3, collection.getCategory());
-            stmt.setDate(4, new java.sql.Date(collection.getAcquisitionDate().getTime()));
-            stmt.setString(5, truncateStatus(collection.getStatus()));
-            stmt.setString(6, collection.getImageUrl());
+            stmt.setString(1, collection.getCollectionId());
+            stmt.setString(2, collection.getName());
+            stmt.setString(3, collection.getDescription());
+            stmt.setString(4, collection.getCategory());
+            stmt.setDate(5, new java.sql.Date(collection.getAcquisitionDate().getTime()));
+            stmt.setString(6, collection.getStatus());
+            stmt.setString(7, collection.getImageUrl());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,20 +60,20 @@ public class CollectionDAO {
             stmt.setString(2, collection.getDescription());
             stmt.setString(3, collection.getCategory());
             stmt.setDate(4, new java.sql.Date(collection.getAcquisitionDate().getTime()));
-            stmt.setString(5, truncateStatus(collection.getStatus()));
+            stmt.setString(5, collection.getStatus());
             stmt.setString(6, collection.getImageUrl());
-            stmt.setInt(7, collection.getCollectionId());
+            stmt.setString(7, collection.getCollectionId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void deleteCollection(int collectionId) {
+    public void deleteCollection(String collectionId) {
         String sql = "DELETE FROM collections WHERE collection_id = ?";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, collectionId);
+            stmt.setString(1, collectionId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -89,7 +90,7 @@ public class CollectionDAO {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Collection collection = new Collection(
-                        rs.getInt("collection_id"),
+                        rs.getString("collection_id"),
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getString("category"),
@@ -103,12 +104,5 @@ public class CollectionDAO {
             e.printStackTrace();
         }
         return collections;
-    }
-
-    private String truncateStatus(String status) {
-        if (status.length() > 10) {
-            return status.substring(0, 10);
-        }
-        return status;
     }
 }

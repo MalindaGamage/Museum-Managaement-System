@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 
 public class MainApplicationFrame extends JFrame {
     private JPanel contentPanel;
-    private boolean isVisitor; // Flag to check if a visitor is logged in
+    private boolean isVisitor;
 
     public MainApplicationFrame(boolean isVisitor) {
         super("Museum Management System");

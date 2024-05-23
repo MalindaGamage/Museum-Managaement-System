@@ -7,45 +7,27 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 public class CollectionManagementPanel extends JPanel {
-    private JTable collectionTable;
-    private DefaultTableModel model;
+    private JTable table;
+    private DefaultTableModel tableModel;
     private CollectionDAO collectionDAO;
 
     public CollectionManagementPanel() {
         setLayout(new BorderLayout());
-
         collectionDAO = new CollectionDAO();
-        model = new DefaultTableModel(new String[]{"Name", "Description", "Category", "Acquisition Date", "Status", "Image URL"}, 0);
-        collectionTable = new JTable(model);
 
-        loadCollections();
+        tableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Description", "Category", "Acquisition Date", "Status", "Image URL"}, 0);
+        table = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(table);
 
-        add(new JScrollPane(collectionTable), BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        JButton addButton = new JButton("Add");
-        JButton editButton = new JButton("Edit");
-        JButton deleteButton = new JButton("Delete");
-
-        addButton.addActionListener(this::addCollection);
-        editButton.addActionListener(this::editCollection);
-        deleteButton.addActionListener(this::deleteCollection);
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    private void loadCollections() {
         List<Collection> collections = collectionDAO.getAllCollections();
         for (Collection collection : collections) {
-            model.addRow(new Object[]{
+            tableModel.addRow(new Object[]{
+                    collection.getCollectionId(),
                     collection.getName(),
                     collection.getDescription(),
                     collection.getCategory(),
@@ -54,49 +36,63 @@ public class CollectionManagementPanel extends JPanel {
                     collection.getImageUrl()
             });
         }
-    }
 
-    private void addCollection(ActionEvent event) {
-        CollectionDialog dialog = new CollectionDialog(null, "Add Collection", true, null, false, model, -1);
-        dialog.setVisible(true);
-    }
-
-    private void editCollection(ActionEvent event) {
-        int selectedRow = collectionTable.getSelectedRow();
-        if (selectedRow != -1) {
-            String name = (String) model.getValueAt(selectedRow, 0);
-            Optional<Collection> optionalCollection = collectionDAO.getAllCollections().stream()
-                    .filter(c -> c.getName().equals(name))
-                    .findFirst();
-            if (optionalCollection.isPresent()) {
-                Collection collection = optionalCollection.get();
-                CollectionDialog dialog = new CollectionDialog(null, "Edit Collection", true, collection, true, model, selectedRow);
+        JButton addButton = new JButton("Add");
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CollectionDialog dialog = new CollectionDialog(null, "Add Collection", true, null, false, tableModel, -1);
                 dialog.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "Collection not found.");
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a collection to edit.");
-        }
-    }
+        });
 
-    private void deleteCollection(ActionEvent event) {
-        int selectedRow = collectionTable.getSelectedRow();
-        if (selectedRow != -1) {
-            String name = (String) model.getValueAt(selectedRow, 0);
-            int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this collection?", "Confirm", JOptionPane.YES_NO_OPTION);
-            if (response == JOptionPane.YES_OPTION) {
-                Optional<Collection> optionalCollection = collectionDAO.getAllCollections().stream()
-                        .filter(c -> c.getName().equals(name))
-                        .findFirst();
-                if (optionalCollection.isPresent()) {
-                    Collection collection = optionalCollection.get();
-                    collectionDAO.deleteCollection(collection.getCollectionId());
-                    model.removeRow(selectedRow);
+        JButton editButton = new JButton("Edit");
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    String collectionId = tableModel.getValueAt(selectedRow, 0).toString();
+                    String name = tableModel.getValueAt(selectedRow, 1).toString();
+                    String description = tableModel.getValueAt(selectedRow, 2).toString();
+                    String category = tableModel.getValueAt(selectedRow, 3).toString();
+                    Date acquisitionDate = java.sql.Date.valueOf(tableModel.getValueAt(selectedRow, 4).toString());
+                    String status = tableModel.getValueAt(selectedRow, 5).toString();
+                    String imageUrl = tableModel.getValueAt(selectedRow, 6).toString();
+
+                    Collection collection = new Collection(collectionId, name, description, category, acquisitionDate, status, imageUrl);
+                    CollectionDialog dialog = new CollectionDialog(null, "Edit Collection", true, collection, true, tableModel, selectedRow);
+                    dialog.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select a collection to edit.");
                 }
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "No collection selected for deletion.");
-        }
+        });
+
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this collection?", "Delete Collection", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        String collectionId = tableModel.getValueAt(selectedRow, 0).toString();
+                        collectionDAO.deleteCollection(collectionId);
+                        tableModel.removeRow(selectedRow);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select a collection to delete.");
+                }
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+
+        add(scrollPane, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 }

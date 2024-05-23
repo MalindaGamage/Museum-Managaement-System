@@ -3,6 +3,7 @@ package service;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import dao.UserDAO;
 import model.User;
+import java.util.UUID;
 
 public class UserService {
     /**
@@ -16,7 +17,8 @@ public class UserService {
         UserDAO userDAO = new UserDAO();
         try {
             String hashedPassword = hashPassword(password);
-            User newUser = new User(0, username, hashedPassword, role, email, isVisitor);
+            UUID userId = UUID.randomUUID();
+            User newUser = new User(userId, username, hashedPassword, role, email, isVisitor);
             userDAO.addUser(newUser);
         } catch (Exception e) {
             System.err.println("Error registering user: " + e.getMessage());
@@ -41,5 +43,20 @@ public class UserService {
      */
     public static boolean checkPassword(String password, String hashedPassword) {
         return BCrypt.verifyer().verify(password.toCharArray(), hashedPassword.toCharArray()).verified;
+    }
+
+    /**
+     * Authenticates a user by verifying the username and password.
+     * @param username Username.
+     * @param password Plain text password.
+     * @return User object if authentication is successful, null otherwise.
+     */
+    public static User authenticateUser(String username, String password) {
+        UserDAO userDAO = new UserDAO();
+        User user = userDAO.getUserByUsername(username);
+        if (user != null && checkPassword(password, user.getPassword())) {
+            return user;
+        }
+        return null;
     }
 }

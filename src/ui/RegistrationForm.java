@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 public class RegistrationForm extends JFrame {
     private JTextField usernameField = new JTextField(10);
     private JPasswordField passwordField = new JPasswordField(10);
-    private JComboBox<String> roleComboBox = new JComboBox<>(new String[]{"model.Visitor", "Admin", "Staff"});
+    private JComboBox<String> roleComboBox = new JComboBox<>(new String[]{"visitor", "admin", "staff"});
     private JTextField emailField = new JTextField(10);
     private JButton registerButton = new JButton("Register");
 
