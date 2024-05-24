@@ -9,14 +9,16 @@ public class Visitor {
     private String email;
     private String phone;
     private Date visitDate;
+    private int groupSize;
 
     // Constructor
-    public Visitor(UUID visitorId, String fullName, String email, String phone, Date visitDate) {
+    public Visitor(UUID visitorId, String fullName, String email, String phone, Date visitDate, int groupSize) {
         this.visitorId = visitorId;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.visitDate = visitDate;
+        this.groupSize = groupSize;
     }
 
     // Getters
@@ -40,6 +42,10 @@ public class Visitor {
         return visitDate;
     }
 
+    public int getGroupSize() {
+        return groupSize;
+    }
+
     // Setters
     public void setVisitorId(UUID visitorId) {
         this.visitorId = visitorId;
@@ -59,5 +65,9 @@ public class Visitor {
 
     public void setVisitDate(Date visitDate) {
         this.visitDate = visitDate;
+    }
+
+    public void setGroupSize(int groupSize) {
+        this.groupSize = groupSize;
     }
 }

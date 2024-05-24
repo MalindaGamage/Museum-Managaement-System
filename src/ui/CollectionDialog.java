@@ -13,12 +13,12 @@ import java.util.Date;
 import java.util.UUID;
 
 public class CollectionDialog extends JDialog {
-    private JTextField nameField = new JTextField(10);
-    private JTextField descriptionField = new JTextField(10);
+    private JTextField nameField = new JTextField(15);
+    private JTextField descriptionField = new JTextField(15);
     private JComboBox<String> categoryField = new JComboBox<>(new String[]{"Art", "Historical", "Science", "Nature"});
-    private JTextField acquisitionDateField = new JTextField(10);
+    private JTextField acquisitionDateField = new JTextField(15);
     private JComboBox<String> statusField = new JComboBox<>(new String[]{"on_display", "in_storage", "on_loan"});
-    private JTextField imageUrlField = new JTextField(10);
+    private JTextField imageUrlField = new JTextField(15);
     private JButton saveButton = new JButton("Save");
     private boolean isEdit;
     private CollectionDAO collectionDAO;
@@ -32,19 +32,82 @@ public class CollectionDialog extends JDialog {
         this.row = row;
         this.collectionDAO = new CollectionDAO();
 
-        setLayout(new GridLayout(7, 2));
-        add(new JLabel("Name:"));
-        add(nameField);
-        add(new JLabel("Description:"));
-        add(descriptionField);
-        add(new JLabel("Category:"));
-        add(categoryField);
-        add(new JLabel("Acquisition Date (yyyy-mm-dd):"));
-        add(acquisitionDateField);
-        add(new JLabel("Status:"));
-        add(statusField);
-        add(new JLabel("Image URL:"));
-        add(imageUrlField);
+        setLayout(new BorderLayout());
+
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        addTitle(mainPanel, gbc);
+        addFormFields(mainPanel, gbc, collection);
+
+        saveButton.addActionListener(this::saveCollection);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        mainPanel.add(saveButton, gbc);
+
+        add(mainPanel, BorderLayout.CENTER);
+        pack();
+        setLocationRelativeTo(owner);
+
+        // Set FlatLaf Look and Feel
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addTitle(JPanel panel, GridBagConstraints gbc) {
+        JLabel titleLabel = new JLabel("Collection Information");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(titleLabel, gbc);
+    }
+
+    private void addFormFields(JPanel panel, GridBagConstraints gbc, Collection collection) {
+        gbc.gridwidth = 1;
+        gbc.gridy++;
+
+        gbc.gridx = 0;
+        panel.add(new JLabel("Name:"), gbc);
+        gbc.gridx = 1;
+        panel.add(nameField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Description:"), gbc);
+        gbc.gridx = 1;
+        panel.add(descriptionField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Category:"), gbc);
+        gbc.gridx = 1;
+        panel.add(categoryField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Acquisition Date (yyyy-mm-dd):"), gbc);
+        gbc.gridx = 1;
+        panel.add(acquisitionDateField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Status:"), gbc);
+        gbc.gridx = 1;
+        panel.add(statusField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Image URL:"), gbc);
+        gbc.gridx = 1;
+        panel.add(imageUrlField, gbc);
 
         if (collection != null) {
             nameField.setText(collection.getName());
@@ -54,12 +117,6 @@ public class CollectionDialog extends JDialog {
             statusField.setSelectedItem(collection.getStatus());
             imageUrlField.setText(collection.getImageUrl());
         }
-
-        saveButton.addActionListener(this::saveCollection);
-        add(saveButton);
-
-        pack();
-        setLocationRelativeTo(owner);
     }
 
     private void saveCollection(ActionEvent event) {
@@ -88,7 +145,7 @@ public class CollectionDialog extends JDialog {
         try {
             acquisitionDate = dateFormat.parse(acquisitionDateStr);
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Invalid date format. Please use yyyy-mm-dd.");
+            JOptionPane.showMessageDialog(this, "Invalid date format. Please use yyyy-MM-dd.");
             return;
         }
 

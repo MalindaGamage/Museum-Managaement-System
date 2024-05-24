@@ -13,10 +13,10 @@ import java.util.Date;
 import java.util.UUID;
 
 public class ExhibitionDialog extends JDialog {
-    private JTextField titleField = new JTextField(10);
-    private JTextField startDateField = new JTextField(10);
-    private JTextField endDateField = new JTextField(10);
-    private JTextField descriptionField = new JTextField(10);
+    private JTextField titleField = new JTextField(15);
+    private JTextField startDateField = new JTextField(15);
+    private JTextField endDateField = new JTextField(15);
+    private JTextField descriptionField = new JTextField(15);
     private JCheckBox activeCheckBox = new JCheckBox();
     private JButton saveButton = new JButton("Save");
     private boolean isEdit;
@@ -32,17 +32,76 @@ public class ExhibitionDialog extends JDialog {
         this.row = row;
         this.exhibitionDAO = new ExhibitionDAO();
 
-        setLayout(new GridLayout(6, 2));
-        add(new JLabel("Title:"));
-        add(titleField);
-        add(new JLabel("Start Date (yyyy-mm-dd):"));
-        add(startDateField);
-        add(new JLabel("End Date (yyyy-mm-dd):"));
-        add(endDateField);
-        add(new JLabel("Description:"));
-        add(descriptionField);
-        add(new JLabel("Active:"));
-        add(activeCheckBox);
+        setLayout(new BorderLayout());
+
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        addTitle(mainPanel, gbc);
+        addFormFields(mainPanel, gbc, exhibition);
+
+        saveButton.addActionListener(this::saveExhibition);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        mainPanel.add(saveButton, gbc);
+
+        add(mainPanel, BorderLayout.CENTER);
+        pack();
+        setLocationRelativeTo(owner);
+
+        // Set FlatLaf Look and Feel
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addTitle(JPanel panel, GridBagConstraints gbc) {
+        JLabel titleLabel = new JLabel("Exhibition Information");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(titleLabel, gbc);
+    }
+
+    private void addFormFields(JPanel panel, GridBagConstraints gbc, Exhibition exhibition) {
+        gbc.gridwidth = 1;
+        gbc.gridy++;
+
+        gbc.gridx = 0;
+        panel.add(new JLabel("Title:"), gbc);
+        gbc.gridx = 1;
+        panel.add(titleField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Start Date (yyyy-mm-dd):"), gbc);
+        gbc.gridx = 1;
+        panel.add(startDateField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("End Date (yyyy-mm-dd):"), gbc);
+        gbc.gridx = 1;
+        panel.add(endDateField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Description:"), gbc);
+        gbc.gridx = 1;
+        panel.add(descriptionField, gbc);
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        panel.add(new JLabel("Active:"), gbc);
+        gbc.gridx = 1;
+        panel.add(activeCheckBox, gbc);
 
         if (exhibition != null) {
             exhibitionId = exhibition.getExhibitionId();
@@ -52,12 +111,6 @@ public class ExhibitionDialog extends JDialog {
             descriptionField.setText(exhibition.getDescription());
             activeCheckBox.setSelected(exhibition.isActive());
         }
-
-        saveButton.addActionListener(this::saveExhibition);
-        add(saveButton);
-
-        pack();
-        setLocationRelativeTo(owner);
     }
 
     private void saveExhibition(ActionEvent event) {
@@ -81,7 +134,7 @@ public class ExhibitionDialog extends JDialog {
             startDate = dateFormat.parse(startDateStr);
             endDate = dateFormat.parse(endDateStr);
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Invalid date format. Please use yyyy-mm-dd.");
+            JOptionPane.showMessageDialog(this, "Invalid date format. Please use yyyy-MM-dd.");
             return;
         }
 

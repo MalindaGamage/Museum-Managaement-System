@@ -19,15 +19,24 @@ public class ExhibitionManagementPanel extends JPanel {
     public ExhibitionManagementPanel() {
         setLayout(new BorderLayout());
 
+        // Set FlatLaf Look and Feel
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
         exhibitionDAO = new ExhibitionDAO();
         model = new DefaultTableModel(new String[]{"Title", "Start Date", "End Date", "Description", "Active"}, 0);
         exhibitionTable = new JTable(model);
+        customizeTable();
+        JScrollPane scrollPane = new JScrollPane(exhibitionTable);
 
         loadExhibitions();
 
-        add(new JScrollPane(exhibitionTable), BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton addButton = new JButton("Add");
         JButton editButton = new JButton("Edit");
         JButton deleteButton = new JButton("Delete");
@@ -41,6 +50,12 @@ public class ExhibitionManagementPanel extends JPanel {
         buttonPanel.add(deleteButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add a title at the top
+        JLabel titleLabel = new JLabel("Exhibition Management");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        add(titleLabel, BorderLayout.NORTH);
     }
 
     private void loadExhibitions() {
@@ -98,5 +113,14 @@ public class ExhibitionManagementPanel extends JPanel {
         } else {
             JOptionPane.showMessageDialog(this, "No exhibition selected for deletion.");
         }
+    }
+
+    private void customizeTable() {
+        exhibitionTable.setFillsViewportHeight(true);
+        exhibitionTable.setRowHeight(30);
+        exhibitionTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        exhibitionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        exhibitionTable.setShowGrid(true);
+        exhibitionTable.setGridColor(Color.LIGHT_GRAY);
     }
 }

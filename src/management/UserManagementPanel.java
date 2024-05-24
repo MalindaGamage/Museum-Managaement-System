@@ -7,12 +7,20 @@ import ui.UserDialog;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class UserManagementPanel extends JPanel {
     private JTable userTable;
     private DefaultTableModel model;
 
     public UserManagementPanel() {
+        // Set FlatLaf Look and Feel
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
         setLayout(new BorderLayout());
         initializeUI();
         loadData();
@@ -21,10 +29,11 @@ public class UserManagementPanel extends JPanel {
     private void initializeUI() {
         model = new DefaultTableModel(new Object[]{"Username", "Role", "Email"}, 0);
         userTable = new JTable(model);
+        customizeTable();
         JScrollPane scrollPane = new JScrollPane(userTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton addButton = new JButton("Add");
         JButton editButton = new JButton("Edit");
         JButton deleteButton = new JButton("Delete");
@@ -38,12 +47,18 @@ public class UserManagementPanel extends JPanel {
         buttonPanel.add(deleteButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add a title at the top
+        JLabel titleLabel = new JLabel("User Management");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        add(titleLabel, BorderLayout.NORTH);
     }
 
     private void loadData() {
         model.setRowCount(0); // Clear the table
         UserDAO userDAO = new UserDAO();
-        java.util.List<User> users = userDAO.getAllUsers();
+        List<User> users = userDAO.getAllUsers();
         for (User user : users) {
             model.addRow(new Object[]{user.getUsername(), user.getRole(), user.getEmail()});
         }
@@ -86,5 +101,14 @@ public class UserManagementPanel extends JPanel {
         } else {
             JOptionPane.showMessageDialog(this, "Please select a user to delete.");
         }
+    }
+
+    private void customizeTable() {
+        userTable.setFillsViewportHeight(true);
+        userTable.setRowHeight(30);
+        userTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        userTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        userTable.setShowGrid(true);
+        userTable.setGridColor(Color.LIGHT_GRAY);
     }
 }
