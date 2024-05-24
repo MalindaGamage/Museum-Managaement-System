@@ -2,15 +2,16 @@ package ui;
 
 import model.User;
 import service.UserService;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class UserDialog extends JDialog {
-    private JTextField usernameField = new JTextField(15);
-    private JPasswordField passwordField = new JPasswordField(15);
+    private JTextField usernameField = new JTextField(10);
+    private JPasswordField passwordField = new JPasswordField(10);
     private JComboBox<String> roleComboBox = new JComboBox<>(new String[]{"admin", "staff", "visitor"});
-    private JTextField emailField = new JTextField(15);
+    private JTextField emailField = new JTextField(10);
     private JCheckBox isVisitorCheckbox = new JCheckBox("Visitor");
     private JButton saveButton = new JButton("Save");
     private boolean isEdit;
@@ -23,47 +24,29 @@ public class UserDialog extends JDialog {
         this.model = model;
         this.row = row;
 
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        // Set the Look and Feel to FlatLaf
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        add(new JLabel("Username:"), gbc);
-        gbc.gridx = 1;
-        add(usernameField, gbc);
+        setLayout(new GridLayout(6, 2, 10, 10));
+        setTitle("User Management");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        add(new JLabel("Password:"), gbc);
-        gbc.gridx = 1;
-        add(passwordField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        add(new JLabel("Role:"), gbc);
-        gbc.gridx = 1;
-        add(roleComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        add(new JLabel("Email:"), gbc);
-        gbc.gridx = 1;
-        add(emailField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        add(new JLabel("Visitor:"), gbc);
-        gbc.gridx = 1;
-        add(isVisitorCheckbox, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.EAST;
-        saveButton.setBackground(new Color(0, 120, 215));
-        saveButton.setForeground(Color.WHITE);
-        add(saveButton, gbc);
+        // Add components
+        add(new JLabel("Username:", new ImageIcon("icons/username.png"), SwingConstants.RIGHT));
+        add(usernameField);
+        add(new JLabel("Password:", new ImageIcon("icons/password.png"), SwingConstants.RIGHT));
+        add(passwordField);
+        add(new JLabel("Role:", new ImageIcon("icons/role.png"), SwingConstants.RIGHT));
+        add(roleComboBox);
+        add(new JLabel("Email:", new ImageIcon("icons/email.png"), SwingConstants.RIGHT));
+        add(emailField);
+        add(new JLabel("Visitor:", new ImageIcon("icons/visitor.png"), SwingConstants.RIGHT));
+        add(isVisitorCheckbox);
 
         if (user != null) {
             usernameField.setText(user.getUsername());
@@ -74,25 +57,35 @@ public class UserDialog extends JDialog {
         }
 
         saveButton.addActionListener(e -> saveUser());
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(saveButton);
+        add(buttonPanel);
+
         pack();
         setLocationRelativeTo(owner);
-        setModal(true);
     }
 
     private void saveUser() {
         String username = usernameField.getText();
-        String password = new String(passwordField.getPassword());
+        String password = new String(passwordField.getPassword()); // Get the password as a string
         String role = (String) roleComboBox.getSelectedItem();
         String email = emailField.getText();
         boolean isVisitor = isVisitorCheckbox.isSelected();
 
+        if (username.trim().isEmpty() || password.trim().isEmpty() || email.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields must be filled.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (isEdit) {
-            UserService.registerUser(username, password, role, email, isVisitor);
+            // Update existing user
+            UserService.updateUser(username, password, role, email, isVisitor); // Ensure password is hashed
             model.setValueAt(username, row, 0);
             model.setValueAt(role, row, 1);
             model.setValueAt(email, row, 2);
         } else {
-            UserService.registerUser(username, password, role, email, isVisitor);
+            // Add new user
+            UserService.registerUser(username, password, role, email, isVisitor); // Ensure password is hashed
             model.addRow(new Object[]{username, role, email});
         }
 

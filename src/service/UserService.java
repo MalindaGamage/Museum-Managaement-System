@@ -59,4 +59,24 @@ public class UserService {
         }
         return null;
     }
+
+    /**
+     * Updates an existing user's details.
+     * @param username Username of the user to update.
+     * @param password Plain text password to be hashed.
+     * @param role The role of the user (e.g., "admin", "visitor").
+     * @param email Email address of the user.
+     * @param isVisitor Whether the user is a visitor.
+     */
+    public static void updateUser(String username, String password, String role, String email, boolean isVisitor) {
+        UserDAO userDAO = new UserDAO();
+        try {
+            String hashedPassword = hashPassword(password);
+            User updatedUser = new User(userDAO.getUserByUsername(username).getUserId(), username, hashedPassword, role, email, isVisitor);
+            userDAO.updateUser(updatedUser);
+        } catch (Exception e) {
+            System.err.println("Error updating user: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
