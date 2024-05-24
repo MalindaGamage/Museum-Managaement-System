@@ -31,28 +31,23 @@ public class UserDialog extends JDialog {
             e.printStackTrace();
         }
 
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new GridLayout(6, 2, 10, 10));
         setTitle("User Management");
         setSize(400, 300);
         setLocationRelativeTo(null);
 
-        // Create input panel
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Add components
+        add(new JLabel("Username:"));
+        add(usernameField);
+        add(new JLabel("Password:"));
+        add(passwordField);
+        add(new JLabel("Role:"));
+        add(roleComboBox);
+        add(new JLabel("Email:"));
+        add(emailField);
+        add(new JLabel("Visitor:"));
+        add(isVisitorCheckbox);
 
-        // Add components to the input panel
-        inputPanel.add(new JLabel("Username:", JLabel.RIGHT));
-        inputPanel.add(usernameField);
-        inputPanel.add(new JLabel("Password:", JLabel.RIGHT));
-        inputPanel.add(passwordField);
-        inputPanel.add(new JLabel("Role:", JLabel.RIGHT));
-        inputPanel.add(roleComboBox);
-        inputPanel.add(new JLabel("Email:", JLabel.RIGHT));
-        inputPanel.add(emailField);
-        inputPanel.add(new JLabel("Visitor:", JLabel.RIGHT));
-        inputPanel.add(isVisitorCheckbox);
-
-        // Set initial values if editing an existing user
         if (user != null) {
             usernameField.setText(user.getUsername());
             passwordField.setText(user.getPassword());
@@ -62,13 +57,9 @@ public class UserDialog extends JDialog {
         }
 
         saveButton.addActionListener(e -> saveUser());
-
-        // Add input panel and button to the dialog
-        add(inputPanel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(saveButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        add(buttonPanel);
 
         pack();
         setLocationRelativeTo(owner);
@@ -76,7 +67,7 @@ public class UserDialog extends JDialog {
 
     private void saveUser() {
         String username = usernameField.getText();
-        String password = new String(passwordField.getPassword()); // Get the password as a string
+        String password = new String(passwordField.getPassword());
         String role = (String) roleComboBox.getSelectedItem();
         String email = emailField.getText();
         boolean isVisitor = isVisitorCheckbox.isSelected();
@@ -86,19 +77,23 @@ public class UserDialog extends JDialog {
             return;
         }
 
-        if (isEdit) {
-            // Update existing user
-            UserService.updateUser(username, password, role, email, isVisitor); // Ensure password is hashed
-            model.setValueAt(username, row, 0);
-            model.setValueAt(role, row, 1);
-            model.setValueAt(email, row, 2);
-        } else {
-            // Add new user
-            UserService.registerUser(username, password, role, email, isVisitor); // Ensure password is hashed
-            model.addRow(new Object[]{username, role, email});
-        }
+        try {
+            if (isEdit) {
+                // Update existing user
+                UserService.updateUser(username, password, role, email, isVisitor);
+                model.setValueAt(username, row, 0);
+                model.setValueAt(role, row, 1);
+                model.setValueAt(email, row, 2);
+            } else {
+                // Add new user
+                UserService.registerUser(username, password, role, email, isVisitor);
+                model.addRow(new Object[]{username, role, email});
+            }
 
-        setVisible(false);
-        dispose();
+            setVisible(false);
+            dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

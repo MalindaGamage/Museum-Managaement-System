@@ -68,15 +68,18 @@ public class UserService {
      * @param email Email address of the user.
      * @param isVisitor Whether the user is a visitor.
      */
-    public static void updateUser(String username, String password, String role, String email, boolean isVisitor) {
+    public static void updateUser(String username, String password, String role, String email, boolean isVisitor) throws Exception {
         UserDAO userDAO = new UserDAO();
-        try {
+        User existingUser = userDAO.getUserByUsername(username);
+        if (existingUser != null) {
             String hashedPassword = hashPassword(password);
-            User updatedUser = new User(userDAO.getUserByUsername(username).getUserId(), username, hashedPassword, role, email, isVisitor);
-            userDAO.updateUser(updatedUser);
-        } catch (Exception e) {
-            System.err.println("Error updating user: " + e.getMessage());
-            e.printStackTrace();
+            existingUser.setPassword(hashedPassword);
+            existingUser.setRole(role);
+            existingUser.setEmail(email);
+            existingUser.setVisitor(isVisitor);
+            userDAO.updateUser(existingUser);
+        } else {
+            throw new Exception("User not found.");
         }
     }
 }
