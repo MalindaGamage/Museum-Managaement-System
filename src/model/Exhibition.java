@@ -1,9 +1,10 @@
 package model;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class Exhibition {
-    private int exhibitionId;
+    private UUID exhibitionId;
     private String title;
     private Date startDate;
     private Date endDate;
@@ -11,7 +12,7 @@ public class Exhibition {
     private boolean isActive;
 
     // Constructor
-    public Exhibition(int exhibitionId, String title, Date startDate, Date endDate, String description, boolean isActive) {
+    public Exhibition(UUID exhibitionId, String title, Date startDate, Date endDate, String description, boolean isActive) {
         this.exhibitionId = exhibitionId;
         this.title = title;
         this.startDate = startDate;
@@ -21,7 +22,7 @@ public class Exhibition {
     }
 
     // Getters
-    public int getExhibitionId() {
+    public UUID getExhibitionId() {
         return exhibitionId;
     }
 
@@ -46,7 +47,7 @@ public class Exhibition {
     }
 
     // Setters
-    public void setExhibitionId(int exhibitionId) {
+    public void setExhibitionId(UUID exhibitionId) {
         this.exhibitionId = exhibitionId;
     }
 

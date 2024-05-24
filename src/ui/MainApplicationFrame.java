@@ -1,5 +1,7 @@
 package ui;
 
+import management.CollectionManagementPanel;
+import management.ExhibitionManagementPanel;
 import management.UserManagementPanel;
 
 import javax.swing.*;

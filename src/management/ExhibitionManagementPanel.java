@@ -1,7 +1,8 @@
-package ui;
+package management;
 
 import dao.ExhibitionDAO;
 import model.Exhibition;
+import ui.ExhibitionDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

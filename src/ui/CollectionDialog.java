@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -64,9 +66,37 @@ public class CollectionDialog extends JDialog {
         String name = nameField.getText();
         String description = descriptionField.getText();
         String category = categoryField.getText();
-        Date acquisitionDate = java.sql.Date.valueOf(acquisitionDateField.getText());
+        String acquisitionDateStr = acquisitionDateField.getText();
         String status = statusField.getText();
         String imageUrl = imageUrlField.getText();
+
+        // Validate name
+        if (name == null || name.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Name cannot be empty.");
+            return;
+        }
+
+        // Validate category
+        if (category == null || category.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Category cannot be empty.");
+            return;
+        }
+
+        // Validate dates
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date acquisitionDate;
+        try {
+            acquisitionDate = dateFormat.parse(acquisitionDateStr);
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(this, "Invalid date format. Please use yyyy-mm-dd.");
+            return;
+        }
+
+        // Validate description
+        if (description == null || description.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Description cannot be empty.");
+            return;
+        }
 
         if (isEdit) {
             Collection collection = new Collection(model.getValueAt(row, 0).toString(), name, description, category, acquisitionDate, status, imageUrl);

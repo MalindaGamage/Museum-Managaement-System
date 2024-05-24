@@ -1,7 +1,8 @@
-package ui;
+package management;
 
 import dao.CollectionDAO;
 import model.Collection;
+import ui.CollectionDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
