@@ -31,23 +31,28 @@ public class UserDialog extends JDialog {
             e.printStackTrace();
         }
 
-        setLayout(new GridLayout(6, 2, 10, 10));
+        setLayout(new BorderLayout(10, 10));
         setTitle("User Management");
         setSize(400, 300);
         setLocationRelativeTo(null);
 
-        // Add components
-        add(new JLabel("Username:", new ImageIcon("icons/username.png"), SwingConstants.RIGHT));
-        add(usernameField);
-        add(new JLabel("Password:", new ImageIcon("icons/password.png"), SwingConstants.RIGHT));
-        add(passwordField);
-        add(new JLabel("Role:", new ImageIcon("icons/role.png"), SwingConstants.RIGHT));
-        add(roleComboBox);
-        add(new JLabel("Email:", new ImageIcon("icons/email.png"), SwingConstants.RIGHT));
-        add(emailField);
-        add(new JLabel("Visitor:", new ImageIcon("icons/visitor.png"), SwingConstants.RIGHT));
-        add(isVisitorCheckbox);
+        // Create input panel
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Add components to the input panel
+        inputPanel.add(new JLabel("Username:", JLabel.RIGHT));
+        inputPanel.add(usernameField);
+        inputPanel.add(new JLabel("Password:", JLabel.RIGHT));
+        inputPanel.add(passwordField);
+        inputPanel.add(new JLabel("Role:", JLabel.RIGHT));
+        inputPanel.add(roleComboBox);
+        inputPanel.add(new JLabel("Email:", JLabel.RIGHT));
+        inputPanel.add(emailField);
+        inputPanel.add(new JLabel("Visitor:", JLabel.RIGHT));
+        inputPanel.add(isVisitorCheckbox);
+
+        // Set initial values if editing an existing user
         if (user != null) {
             usernameField.setText(user.getUsername());
             passwordField.setText(user.getPassword());
@@ -57,9 +62,13 @@ public class UserDialog extends JDialog {
         }
 
         saveButton.addActionListener(e -> saveUser());
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        // Add input panel and button to the dialog
+        add(inputPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
         buttonPanel.add(saveButton);
-        add(buttonPanel);
+        add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
         setLocationRelativeTo(owner);
