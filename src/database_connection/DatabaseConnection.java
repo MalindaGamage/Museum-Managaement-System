@@ -8,9 +8,17 @@ public class DatabaseConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "Malinda@1997";
 
-    public static Connection getConnection() {
+    /*public static Connection getConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }*/
+    public static Connection getConnection() {
+        try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (Exception e) {
             e.printStackTrace();
