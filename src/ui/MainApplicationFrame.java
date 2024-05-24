@@ -3,6 +3,7 @@ package ui;
 import management.CollectionManagementPanel;
 import management.ExhibitionManagementPanel;
 import management.UserManagementPanel;
+import session.UserSession;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,10 @@ public class MainApplicationFrame extends JFrame {
         JMenuItem exitItem = new JMenuItem("Exit");
         fileMenu.add(exitItem);
         exitItem.addActionListener(e -> System.exit(0));
+
+        JMenuItem logoutItem = new JMenuItem("Logout");
+        fileMenu.add(logoutItem);
+        logoutItem.addActionListener(this::performLogout);
 
         if (!isVisitor) {
             setupAdminUI(menuBar);
@@ -98,5 +103,12 @@ public class MainApplicationFrame extends JFrame {
         contentPanel.add(collectionViewerPanel);
         contentPanel.revalidate();
         contentPanel.repaint();
+    }
+
+    private void performLogout(ActionEvent event) {
+        UserSession.logOut();
+        dispose();
+        LoginForm loginForm = new LoginForm();
+        loginForm.setVisible(true);
     }
 }

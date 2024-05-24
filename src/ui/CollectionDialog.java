@@ -15,9 +15,9 @@ import java.util.UUID;
 public class CollectionDialog extends JDialog {
     private JTextField nameField = new JTextField(10);
     private JTextField descriptionField = new JTextField(10);
-    private JTextField categoryField = new JTextField(10);
+    private JComboBox<String> categoryField = new JComboBox<>(new String[]{"Art", "Historical", "Science", "Nature"});
     private JTextField acquisitionDateField = new JTextField(10);
-    private JTextField statusField = new JTextField(10);
+    private JComboBox<String> statusField = new JComboBox<>(new String[]{"on_display", "in_storage", "on_loan"});
     private JTextField imageUrlField = new JTextField(10);
     private JButton saveButton = new JButton("Save");
     private boolean isEdit;
@@ -39,7 +39,7 @@ public class CollectionDialog extends JDialog {
         add(descriptionField);
         add(new JLabel("Category:"));
         add(categoryField);
-        add(new JLabel("Acquisition Date:"));
+        add(new JLabel("Acquisition Date (yyyy-mm-dd):"));
         add(acquisitionDateField);
         add(new JLabel("Status:"));
         add(statusField);
@@ -49,9 +49,9 @@ public class CollectionDialog extends JDialog {
         if (collection != null) {
             nameField.setText(collection.getName());
             descriptionField.setText(collection.getDescription());
-            categoryField.setText(collection.getCategory());
+            categoryField.setSelectedItem(collection.getCategory());
             acquisitionDateField.setText(collection.getAcquisitionDate().toString());
-            statusField.setText(collection.getStatus());
+            statusField.setSelectedItem(collection.getStatus());
             imageUrlField.setText(collection.getImageUrl());
         }
 
@@ -65,9 +65,9 @@ public class CollectionDialog extends JDialog {
     private void saveCollection(ActionEvent event) {
         String name = nameField.getText();
         String description = descriptionField.getText();
-        String category = categoryField.getText();
+        String category = (String) categoryField.getSelectedItem();
         String acquisitionDateStr = acquisitionDateField.getText();
-        String status = statusField.getText();
+        String status = (String) statusField.getSelectedItem();
         String imageUrl = imageUrlField.getText();
 
         // Validate name
